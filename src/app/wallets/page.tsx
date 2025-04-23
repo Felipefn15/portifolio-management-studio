@@ -3,11 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function WalletsPage() {
   const [wallets, setWallets] = useState([
-    { id: 1, name: "Main Wallet", balance: 10000, spent: 2000, profitLoss: 500 },
-    { id: 2, name: "Savings", balance: 50000, spent: 1000, profitLoss: 1000 },
+    { id: "1", name: "Main Wallet", balance: 10000, spent: 2000, profitLoss: 500 },
+    { id: "2", name: "Savings", balance: 50000, spent: 1000, profitLoss: 1000 },
   ]);
 
   return (
@@ -23,7 +24,9 @@ export default function WalletsPage() {
               <p>Balance: ${wallet.balance}</p>
               <p>Spent: ${wallet.spent}</p>
               <p>Profit/Loss: ${wallet.profitLoss}</p>
-              <Button>View Details</Button>
+              <Link href={`/wallets/${wallet.id}`}>
+                <Button>View Details</Button>
+              </Link>
             </CardContent>
           </Card>
         ))}
