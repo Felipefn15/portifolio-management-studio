@@ -24,12 +24,6 @@ export default function Home() {
 
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, redirect to wallets page
-        router.push("/wallets");
-      } else {
-         router.push("/login");
-      }
     });
 
     // Cleanup subscription on unmount
@@ -44,3 +38,4 @@ export default function Home() {
     </div>
   );
 }
+
