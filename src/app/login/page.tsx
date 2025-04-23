@@ -6,16 +6,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getApp } from "firebase/app";
+import { useEffect } from "react";
+import { firebaseConfig } from "@/lib/firebase";
+import { initializeApp } from "firebase/app";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-    const router = useRouter();
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      getApp();
+    } catch (e) {
+      initializeApp(firebaseConfig);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement authentication logic here.
+    setError(null);
+
+    try {
+      const auth = getAuth();
+      await signInWithEmailAndPassword(auth, email, password);
       router.push("/wallets");
+    } catch (e: any) {
+      setError(e.message);
+    }
   };
 
   return (
@@ -27,6 +48,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+            {error && <div className="text-red-500">{error}</div>}
             <div>
               <Label htmlFor="email">Email</Label>
               <Input
@@ -54,3 +76,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
