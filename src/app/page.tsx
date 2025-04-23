@@ -14,7 +14,12 @@ export default function Home() {
     try {
       getApp(); // Check if Firebase is already initialized
     } catch (e) {
-      initializeApp(firebaseConfig); // Initialize only if not already initialized
+      if (firebaseConfig.apiKey) {
+        initializeApp(firebaseConfig); // Initialize only if not already initialized
+      } else {
+        console.error("Firebase API key is missing. Ensure NEXT_PUBLIC_FIREBASE_API_KEY is set in your environment variables.");
+        return;
+      }
     }
 
     const auth = getAuth();
@@ -22,6 +27,8 @@ export default function Home() {
       if (user) {
         // User is signed in, redirect to wallets page
         router.push("/wallets");
+      } else {
+         router.push("/login");
       }
     });
 
@@ -37,4 +44,3 @@ export default function Home() {
     </div>
   );
 }
-
