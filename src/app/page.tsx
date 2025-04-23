@@ -4,11 +4,19 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getApp, initializeApp } from "firebase/app";
+import { firebaseConfig } from "@/lib/firebase";
 
 export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    try {
+      getApp(); // Check if Firebase is already initialized
+    } catch (e) {
+      initializeApp(firebaseConfig); // Initialize only if not already initialized
+    }
+
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
