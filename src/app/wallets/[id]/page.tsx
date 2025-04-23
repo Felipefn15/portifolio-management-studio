@@ -2,12 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function WalletDetailsPage() {
   const { id } = useParams();
-  const [wallet, setWallet] = useState(null);
+  const [wallet, setWallet] = useState<{ id: string; name: string; balance: number; spent: number; profitLoss: number } | null>(null);
+  const [open, setOpen] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editBalance, setEditBalance] = useState("");
 
   useEffect(() => {
     // Mock data for demonstration purposes
@@ -18,7 +24,22 @@ export default function WalletDetailsPage() {
 
     const foundWallet = mockWallets.find((w) => w.id === id);
     setWallet(foundWallet);
+    if (foundWallet) {
+      setEditName(foundWallet.name);
+      setEditBalance(String(foundWallet.balance));
+    }
   }, [id]);
+
+  const handleEditWallet = () => {
+    setOpen(true);
+  };
+
+  const handleSaveWallet = () => {
+    if (wallet) {
+      setWallet({ ...wallet, name: editName, balance: parseFloat(editBalance) });
+      setOpen(false);
+    }
+  };
 
   if (!wallet) {
     return <div>Loading...</div>;
@@ -35,7 +56,44 @@ export default function WalletDetailsPage() {
           <p>Balance: ${wallet.balance}</p>
           <p>Spent: ${wallet.spent}</p>
           <p>Profit/Loss: ${wallet.profitLoss}</p>
-          <Button>Edit Wallet</Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={handleEditWallet}>Edit Wallet</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Wallet</DialogTitle>
+                <DialogDescription>
+                  Make changes to your wallet details.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="balance" className="text-right">
+                    Balance
+                  </Label>
+                  <Input
+                    id="balance"
+                    value={editBalance}
+                    onChange={(e) => setEditBalance(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <Button onClick={handleSaveWallet}>Save changes</Button>
+            </DialogContent>
+          </Dialog>
         </CardContent>
       </Card>
     </div>
